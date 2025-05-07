@@ -13,3 +13,7 @@ https://github.com/LiBwrt/openwrt-6.x.git
 https://github.com/qosmio/openwrt-ipq.git
 
 https://github.com/King-Of-Knights/openwrt-6.x.git
+
+CR1000A DTS檔來自：
+
+https://github.com/kinglove1990/immortalwrt.git
