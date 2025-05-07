@@ -47,26 +47,6 @@
 	};
 };
 
-&soc {
-	fan5646_vreg: dummy_reg {
-		compatible = "regulator-fixed";
-		regulator-name = "fan5646_vreg";
-		regulator-min-microvolt = <3300000>;
-		regulator-max-microvolt = <3300000>;
-	};
-
-	fan5646 {
-		status = "okay";
-		compatible = "fsi,leds-fan5646";
-		linux-name = "white";
-		rgb-name = "rgb";
-		gpios = <&tlmm 0x1d 0x2>; /* COMM GPIO, GPIOF_DIR_OUT | GPIOF_INIT_HIGH */
-		full-current = <0>; /* Default current 5 mA */
-		tsleep = <7>;
-		fan5646-supply = <&fan5646_vreg>; /* phandle of our regulator node */
-	};
-};
-
 &blsp1_i2c3 {
 	status = "okay";
 	pinctrl-0 = <&i2c_2_pins>;
@@ -138,30 +118,58 @@
 	pinctrl-names = "default";
 	reset-gpios = <&tlmm 37 GPIO_ACTIVE_LOW>;
 
-	aqr113c: ethernet-phy@8 {
+	aqr113c_8: ethernet-phy@8 {
 		compatible = "ethernet-phy-ieee802.3-c45";
 		reg = <0x08>;
-		// reset-gpios = <&tlmm 63 GPIO_ACTIVE_LOW>;
+	};
+
+	aqr113c_0: ethernet-phy@0 {
+		compatible = "ethernet-phy-ieee802.3-c45";
+		reg = <0x00>;
+	};
+
+	RTL8221B_1: ethernet-phy@7 {
+		compatible = "ethernet-phy-ieee802.3-c45";
+		reg = <0x07>;
+	};
+
+	RTL8221B_2: ethernet-phy@3 {
+		compatible = "ethernet-phy-ieee802.3-c45";
+		reg = <0x03>;
 	};
 
 	mxl3711: ethernet-phy@f {
 		//compatible = "ethernet-phy-ieee802.3-c45";
 		reg = <0x0f>;
-		// reset-gpios = <&tlmm 63 GPIO_ACTIVE_LOW>;
 	};
 };
 
 &switch {
 	status = "okay";
 
-	switch_lan_bmp = <ESS_PORT5>;
+	switch_lan_bmp = <ESS_PORT1 | ESS_PORT2 | ESS_PORT3 | ESS_PORT5>;
 	switch_wan_bmp = <ESS_PORT6>;
 	switch_mac_mode = <MAC_MODE_PSGMII>;
 	switch_mac_mode1 = <MAC_MODE_10GBASE_R>;
 	switch_mac_mode2 = <MAC_MODE_USXGMII>;
 
 	qcom,port_phyinfo {
-		rtl9303:port@5 {
+		port@1 {
+			port_id = <1>;
+			phy_address = <0x0>;
+                        ethernet-phy-ieee802.3-c45;
+
+		port@2 {
+			port_id = <2>;
+			phy_address = <0x7>;
+                        ethernet-phy-ieee802.3-c45;
+
+		port@3 {
+			port_id = <3>;
+			phy_address = <0x3>;
+                        ethernet-phy-ieee802.3-c45;
+
+		RTL9303:port@5 {
 			port_id = <5>;
 			phy_address = <0x4>;
 		};
@@ -180,15 +188,33 @@
 	qcom,ath11k-calibration-variant = "Verizon-CR1000A";
 };
 
+&dp1 {
+	status = "okay";
+	phy-handle = <&AQR113_0>;
+	label = "lan1";
+};
+
+&dp2 {
+	status = "okay";
+	phy-handle = <&RTL8221B_1>;
+	label = "lan2";
+};
+
+&dp3 {
+	status = "okay";
+	phy-handle = <&RTL8221B_2>;
+	label = "lan3";
+};
+
 &dp5_syn {
 	status = "okay";
-	phy-handle = <&rtl9303>;
-	label = "lan";
+	phy-handle = <&RTL9303>;
+	label = "lan4";
 };
 
 &dp6_syn {
 	status = "okay";
-	phy-handle = <&aqr113c>;
+	phy-handle = <&aqr113c_8>;
 	label = "wan";
 };
 
